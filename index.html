@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Gisele ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0c0505; 
+            color: #ffffff;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, .serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-panel {
+            background: rgba(20, 5, 5, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 50, 50, 0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .btn-romantic {
+            background: linear-gradient(135deg, #cc0000, #800000);
+            box-shadow: 0 4px 15px rgba(204, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        .btn-romantic:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(204, 0, 0, 0.5);
+        }
+        .btn-romantic:active {
+            transform: translateY(1px);
+        }
+
+        .section-locked {
+            opacity: 0.1;
+            pointer-events: none;
+            filter: blur(4px);
+            transition: all 1s ease-in-out;
+        }
+        .section-unlocked {
+            opacity: 1;
+            pointer-events: auto;
+            filter: blur(0);
+        }
+
+        /* Heart Background animation */
+        .bg-hearts {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; pointer-events: none;
+            background-image: radial-gradient(circle at 50% 50%, #2a0808 0%, #0c0505 80%);
+        }
+
+        .floating-heart {
+            position: absolute;
+            color: rgba(255, 0, 51, 0.05);
+            animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+            from { transform: translateY(100vh) scale(0.5); opacity: 0; }
+            50% { opacity: 0.8; }
+            to { transform: translateY(-20vh) scale(1.2); opacity: 0; }
+        }
+
+        .carousel-img {
+            display: none;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        .carousel-img.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body class="relative min-h-screen flex flex-col items-center">
+
+    <div class="bg-hearts" id="hearts-container"></div>
+
+    <!-- GLOBAL MODAL (Pop-up) -->
+    <div id="modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+        <div class="glass-panel p-8 rounded-3xl max-w-sm w-full text-center transform scale-95 opacity-0 transition-all duration-300 border border-red-500/30" id="modal-content">
+            <h3 id="modal-title" class="text-2xl serif italic mb-3">Título</h3>
+            <p id="modal-text" class="text-gray-300 mb-8 font-light text-sm md:text-base leading-relaxed">Mensagem</p>
+            <button onclick="closeModal()" class="w-full py-3 rounded-full btn-romantic text-white text-sm uppercase tracking-widest font-bold">Continuar</button>
+        </div>
+    </div>
+
+    <!-- VOUCHER MODAL (Pop-up de Agendamento) -->
+    <div id="voucher-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+        <div class="glass-panel p-8 rounded-3xl max-w-sm w-full text-center transform scale-95 opacity-0 transition-all duration-300 border border-red-500/30" id="voucher-content">
+            <h3 id="v-title" class="text-2xl serif italic mb-2 text-red-500">Agendar Vale</h3>
+            <p id="v-desc" class="text-gray-400 text-xs mb-6 uppercase tracking-widest">Detalhes do vale</p>
+            
+            <label class="block text-left text-sm text-gray-300 mb-2">Para quando vamos agendar?</label>
+            <input type="date" id="v-date" style="color-scheme: dark;" class="w-full bg-black/50 border border-red-900/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 mb-6 uppercase tracking-widest text-sm">
+            
+            <div class="flex gap-4">
+                <button onclick="closeVoucherModal()" class="w-1/2 py-3 rounded-full border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-xs uppercase tracking-widest font-bold">Cancelar</button>
+                <button onclick="confirmVoucher()" class="w-1/2 py-3 rounded-full btn-romantic text-white text-xs uppercase tracking-widest font-bold">Resgatar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Counter -->
+    <div class="sticky top-0 w-full z-50 backdrop-blur-md bg-black/60 border-b border-red-900/30 py-3 text-center shadow-lg">
+        <p class="text-xs uppercase tracking-[0.2em] text-red-400/80 mb-1">Tempo ao seu lado</p>
+        <p id="time-counter" class="text-sm md:text-base font-semibold text-white tracking-widest font-mono">Carregando...</p>
+    </div>
+
+    <main class="w-full max-w-4xl mx-auto flex flex-col items-center pb-32">
+
+        <!-- SECTION 1: INÍCIO + BEIJO + SPOTIFY + FOTOS -->
+        <section id="sec-1" class="w-full min-h-screen flex flex-col justify-center items-center p-6 section-unlocked">
+            <div class="glass-panel rounded-3xl p-8 md:p-12 text-center w-full max-w-2xl">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6 text-red-500 serif italic">Para Gisele</h1>
+                
+                <div id="q1-box">
+                    <p class="text-gray-300 leading-relaxed mb-8 text-sm md:text-base font-light">
+                        Preparei algo especial para hoje. Para acessar as memórias e liberar a nossa música, primeiro responda à pergunta de segurança.
+                    </p>
+                    <label class="block text-sm text-gray-300 mb-4 tracking-widest uppercase font-bold">Onde foi nosso primeiro beijo?</label>
+                    <input type="text" id="q1-input" class="w-full bg-black/50 border border-red-900/50 rounded-xl px-4 py-4 text-center text-white text-lg focus:outline-none focus:border-red-500 transition-colors mb-6 placeholder-gray-700" placeholder="Digite aqui...">
+                    <button onclick="checkQ1()" class="w-full py-4 rounded-xl btn-romantic text-white font-bold tracking-widest uppercase text-sm">
+                        Desbloquear
+                    </button>
+                </div>
+
+                <!-- Story Box: Hidden until Q1 is answered correctly -->
+                <div id="story-1-box" class="hidden flex-col items-center w-full mt-4 animate-[fadeIn_1s_ease-in-out]">
+                    <p class="text-green-400 text-sm tracking-widest mb-6 uppercase border border-green-500/30 px-4 py-1 rounded-full">Acesso Liberado</p>
+                    
+                    <p class="text-gray-300 mb-4 text-sm font-light">Você me conhece... tudo fica mais divertido com uma trilha sonora. Dê o play pra entrar no clima!</p>
+
+                    <!-- Spotify Embed -->
+                    <div class="w-full rounded-2xl overflow-hidden shadow-lg border border-red-900/20 mb-8 bg-black">
+                        <iframe src="https://open.spotify.com/embed/track/00j16DuIL1HPHjjLMNcYX0?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                    </div>
+
+                    <!-- Photo Carousel -->
+                    <div class="relative w-full max-w-[500px] aspect-square rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black mb-6">
+                        <img class="carousel-img active w-full h-full object-cover object-center" src="https://i.ibb.co/gkGnKHP/5-ECDFA31-5-D29-48-FD-A200-84-C770-C58996.jpg">
+                        <img class="carousel-img w-full h-full object-cover object-center" src="https://i.ibb.co/B5ckB3R3/1-E0-DFE08-CBC9-4-BD6-A301-28-EDC915-E43-F.jpg">
+                        <img class="carousel-img w-full h-full object-cover object-center" src="https://i.ibb.co/d0jC1HgH/D093743-C-03-F2-4069-915-F-98370-F6-F8956.jpg">
+                        <img class="carousel-img w-full h-full object-cover object-center" src="https://i.ibb.co/hRNwT4FD/C-pia-de-5865-B61-F-63-C5-4-B52-AC3-F-5-FCCF0-CBA14-F.jpg">
+                        
+                        <!-- Overlay Text -->
+                        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 to-transparent pt-12 pb-6 px-6 text-center">
+                            <p id="carousel-text" class="text-white text-sm md:text-base font-light italic drop-shadow-md">Nossos momentos juntos têm sido incríveis.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mb-8">
+                        <button onclick="prevImg()" class="px-6 py-2 rounded-full border border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors text-sm">&lt; Anterior</button>
+                        <button onclick="nextImg()" class="px-6 py-2 rounded-full border border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors text-sm">Próxima &gt;</button>
+                    </div>
+
+                    <p class="text-sm text-gray-300 mb-6 italic border-t border-white/10 pt-6">Passo 1: Olhe para o lado agora e pegue suas flores e o seu livro. Escolhi com calma pra você curtir.</p>
+
+                    <button onclick="unlockSection(2)" class="w-full py-4 rounded-full btn-romantic text-white font-bold tracking-widest uppercase text-sm">
+                        Ir para a Etapa 2
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: QUEM AMA MAIS & VÍDEO -->
+        <section id="sec-2" class="w-full min-h-screen flex flex-col justify-center items-center p-6 section-locked">
+            <div class="glass-panel rounded-3xl p-8 md:p-12 w-full max-w-2xl text-center">
+                <h2 class="text-3xl text-red-400 mb-2 serif italic">Etapa 2</h2>
+                <p class="text-gray-400 text-sm mb-8">Vamos aos fatos irrevogáveis.</p>
+
+                <div id="q2-box">
+                    <h3 class="text-xl md:text-2xl text-white mb-8 font-light">Quem ama mais?</h3>
+                    <div class="flex flex-col gap-4">
+                        <button onclick="correctQ2()" class="w-full bg-black/40 border border-gray-600/50 text-gray-300 py-4 rounded-xl hover:bg-white/5 transition-colors text-sm tracking-widest uppercase shadow-md">
+                            A) Gustavo
+                        </button>
+                        <button onclick="wrongQ2()" class="w-full bg-black/40 border border-gray-600/50 text-gray-300 py-4 rounded-xl hover:bg-white/5 transition-colors text-sm tracking-widest uppercase shadow-md">
+                            B) Gisele
+                        </button>
+                    </div>
+                </div>
+
+                <div id="story-2-box" class="hidden flex-col items-center w-full mt-4 animate-[fadeIn_1s_ease-in-out]">
+                    <div class="w-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black mb-6">
+                        <div style="padding:177.78% 0 0 0;position:relative;">
+                            <iframe src="https://player.vimeo.com/video/1200491804?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Video"></iframe>
+                        </div>
+                    </div>
+
+                    <div class="text-left w-full border-l-2 border-red-500 pl-4 py-2 mb-8">
+                        <p class="text-gray-200 text-sm md:text-base leading-relaxed italic font-light">
+                            "A gente sabe que não é 100% igual, e que bom, porque é exatamente isso que deixa tudo melhor. Mas sabe o que realmente me encanta no vídeo acima? <span class="text-red-400 font-semibold">O seu sorriso.</span> Ele tem o poder de melhorar o meu dia inteiro. Adoro o seu humor, você é linda demais e a nossa dinâmica funciona muito bem. Você é o amor da minha vida, simples assim."
+                        </p>
+                    </div>
+
+                    <button onclick="unlockSection(3)" class="w-full py-4 rounded-full btn-romantic text-white font-bold tracking-widest uppercase text-sm">
+                        Resgatar Benefícios
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: VALES COM AGENDA -->
+        <section id="sec-3" class="w-full min-h-screen flex flex-col justify-center items-center p-6 section-locked">
+            <div class="w-full max-w-4xl text-center">
+                <h2 class="text-3xl md:text-4xl text-red-500 mb-4 serif italic">Pacote de Experiências</h2>
+                <p class="text-gray-300 text-sm mb-10 max-w-lg mx-auto">Regra: Válido para usar na data que você quiser. Escolha a experiência abaixo para combinarmos o dia!</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                    <div id="card-cinema" onclick="openVoucherModal('Vale Cinema', 'Pipoca gigante + filme à sua escolha', 'cinema')" class="glass-panel p-6 rounded-2xl hover:bg-red-900/20 hover:border-red-500/50 transition-all cursor-pointer flex flex-col items-center group">
+                        <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🍿</div>
+                        <h3 class="text-lg font-bold text-white mb-1 uppercase tracking-widest">Vale Cinema</h3>
+                        <p class="text-xs text-gray-400">Pipoca gigante + filme à sua escolha</p>
+                        <p class="badge-text text-[10px] text-red-400 mt-3 uppercase font-bold tracking-widest bg-red-900/30 px-3 py-1 rounded border border-red-500/30">Agendar Data</p>
+                    </div>
+                    
+                    <div id="card-natureza" onclick="openVoucherModal('Vale Natureza', 'Desconectar e curtir o ar livre', 'natureza')" class="glass-panel p-6 rounded-2xl hover:bg-red-900/20 hover:border-red-500/50 transition-all cursor-pointer flex flex-col items-center group">
+                        <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🌲</div>
+                        <h3 class="text-lg font-bold text-white mb-1 uppercase tracking-widest">Vale Natureza</h3>
+                        <p class="text-xs text-gray-400">Desconectar e curtir o ar livre</p>
+                        <p class="badge-text text-[10px] text-red-400 mt-3 uppercase font-bold tracking-widest bg-red-900/30 px-3 py-1 rounded border border-red-500/30">Agendar Data</p>
+                    </div>
+
+                    <div id="card-motel" onclick="openVoucherModal('Vale Motel', 'Uma noite especial sem hora pra acabar', 'motel')" class="glass-panel p-6 rounded-2xl hover:bg-red-900/20 hover:border-red-500/50 transition-all cursor-pointer flex flex-col items-center group">
+                        <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🔥</div>
+                        <h3 class="text-lg font-bold text-white mb-1 uppercase tracking-widest">Vale Motel</h3>
+                        <p class="text-xs text-gray-400">Uma noite especial sem hora pra acabar</p>
+                        <p class="badge-text text-[10px] text-red-400 mt-3 uppercase font-bold tracking-widest bg-red-900/30 px-3 py-1 rounded border border-red-500/30">Agendar Data</p>
+                    </div>
+
+                    <div id="card-restaurante" onclick="openVoucherModal('Vale Restaurante', 'O que você quiser comer, eu pago.', 'restaurante')" class="glass-panel p-6 rounded-2xl hover:bg-red-900/20 hover:border-red-500/50 transition-all cursor-pointer flex flex-col items-center group sm:col-start-1 lg:col-start-auto">
+                        <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🍷</div>
+                        <h3 class="text-lg font-bold text-white mb-1 uppercase tracking-widest">Vale Restaurante</h3>
+                        <p class="text-xs text-gray-400">O que você quiser comer, eu pago.</p>
+                        <p class="badge-text text-[10px] text-red-400 mt-3 uppercase font-bold tracking-widest bg-red-900/30 px-3 py-1 rounded border border-red-500/30">Agendar Data</p>
+                    </div>
+
+                    <div id="card-preguica" onclick="openVoucherModal('Vale Preguiça', 'Cozinho, peço delivery, e você descansa.', 'preguica')" class="glass-panel p-6 rounded-2xl hover:bg-red-900/20 hover:border-red-500/50 transition-all cursor-pointer flex flex-col items-center group sm:col-start-2 lg:col-start-auto">
+                        <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🛋️</div>
+                        <h3 class="text-lg font-bold text-white mb-1 uppercase tracking-widest">Vale Preguiça</h3>
+                        <p class="text-xs text-gray-400">Cozinho, peço delivery, e você descansa.</p>
+                        <p class="badge-text text-[10px] text-red-400 mt-3 uppercase font-bold tracking-widest bg-red-900/30 px-3 py-1 rounded border border-red-500/30">Agendar Data</p>
+                    </div>
+                </div>
+
+                <button onclick="unlockSection(4)" class="w-full max-w-md mx-auto py-4 rounded-full btn-romantic text-white font-bold tracking-widest uppercase text-sm block">
+                    Ir para a Última Etapa
+                </button>
+            </div>
+        </section>
+
+        <!-- SECTION 4: PIN & FUTURO & CAIXINHA -->
+        <section id="sec-4" class="w-full min-h-screen flex flex-col justify-center items-center p-6 section-locked">
+            <div class="glass-panel rounded-3xl p-8 md:p-12 w-full max-w-2xl text-center">
+                <h2 class="text-3xl text-red-400 mb-2 serif italic">Etapa Final</h2>
+                <p class="text-gray-400 text-sm mb-8">Insira o código PIN. <br><span class="text-red-500/80 text-xs">(Dica: A data especial que nos trouxe até aqui, ex: 0000)</span></p>
+
+                <div id="pin-box">
+                    <div class="flex justify-center gap-3 mb-6">
+                        <input type="text" id="pin-input" maxlength="5" class="w-48 bg-black/50 border border-red-900/50 rounded-xl px-4 py-4 text-center text-white text-3xl font-mono tracking-[0.5em] focus:outline-none focus:border-red-500 transition-colors placeholder-gray-800" placeholder="01/11">
+                    </div>
+                    <button onclick="checkPIN()" class="w-full py-4 rounded-xl btn-romantic text-white font-bold tracking-widest uppercase text-sm">
+                        Desbloquear
+                    </button>
+                </div>
+
+                <!-- Bônus Box -->
+                <div id="bonus-box" class="hidden flex-col items-center w-full mt-4 animate-[fadeIn_1s_ease-in-out]">
+                    <p class="text-green-400 text-sm tracking-widest mb-6 uppercase border border-green-500/30 px-4 py-1 rounded-full">Código Aceito</p>
+                    <p class="text-gray-200 text-sm md:text-base leading-relaxed italic mb-8 font-light">
+                        Você acabou de ganhar um bônus especial: o poder de dar uma olhadinha rápida no nosso futuro juntos. Pronta?
+                    </p>
+                    <button onclick="showFuture()" class="w-full py-4 rounded-full border border-red-500 text-red-400 hover:bg-red-500/10 font-bold tracking-widest uppercase text-sm mb-4 transition-colors">
+                        Ver o Futuro
+                    </button>
+                </div>
+
+                <!-- Final Message + Future Photos -->
+                <div id="final-box" class="hidden flex-col items-center w-full mt-8 animate-[fadeIn_1s_ease-in-out]">
+                    
+                    <!-- Imagens do Futuro IA -->
+                    <div class="flex flex-col sm:flex-row gap-4 mb-10 w-full justify-center">
+                        <img src="https://i.ibb.co/QFnshzJJ/image.png" class="w-full sm:w-1/2 object-cover rounded-2xl border border-white/10 shadow-lg aspect-square" alt="Casamento">
+                        <img src="https://i.ibb.co/JWjwFKm7/image.png" class="w-full sm:w-1/2 object-cover rounded-2xl border border-white/10 shadow-lg aspect-square" alt="Nós velhinhos">
+                    </div>
+
+                    <div class="text-red-500 mb-6 mt-4">
+                        <svg class="w-16 h-16 mx-auto animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </div>
+                    
+                    <p class="text-lg md:text-xl text-gray-200 mb-6 font-light leading-relaxed italic border-b border-white/10 pb-8">
+                        Essa data não foi o dia que oficializamos, mas é importante pra mim. Foi quando a gente foi pra Bonfim e ali eu percebi que estava <span class="text-red-400 font-bold">completamente apaixonado por você</span>.<br><br>
+                        A promessa de tudo que a gente ainda vai construir juntos tá guardada bem aí do seu lado.<br><br>
+                        <span class="text-white font-bold text-xl block mt-4 serif">Pode abrir a caixinha agora. 💍</span>
+                    </p>
+
+                    <p class="text-red-500 text-sm tracking-[0.3em] font-bold mt-4 uppercase">Feliz Dia dos Namorados</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // MODAL SYSTEM LOGIC
+        function showModal(title, text, type) {
+            const modal = document.getElementById('modal');
+            const mTitle = document.getElementById('modal-title');
+            const mText = document.getElementById('modal-text');
+            const mContent = document.getElementById('modal-content');
+            
+            mTitle.innerText = title;
+            mText.innerText = text;
+            
+            if(type === 'error') {
+                mTitle.classList.remove('text-green-400');
+                mTitle.classList.add('text-red-500');
+            } else {
+                mTitle.classList.remove('text-red-500');
+                mTitle.classList.add('text-green-400');
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            setTimeout(() => {
+                mContent.classList.remove('scale-95', 'opacity-0');
+                mContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            const mContent = document.getElementById('modal-content');
+            
+            mContent.classList.remove('scale-100', 'opacity-100');
+            mContent.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // BACKGROUND HEARTS GENERATOR
+        const container = document.getElementById('hearts-container');
+        const heartSVG = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+        for(let i=0; i<15; i++) {
+            let el = document.createElement('div');
+            el.className = 'floating-heart';
+            el.innerHTML = heartSVG;
+            el.style.width = Math.random() * 30 + 10 + 'px';
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.animationDuration = Math.random() * 10 + 10 + 's';
+            el.style.animationDelay = Math.random() * 5 + 's';
+            container.appendChild(el);
+        }
+
+        // TIME COUNTER LOGIC
+        const startDate = new Date('2024-11-01T00:00:00'); 
+
+        function updateCounter() {
+            const now = new Date();
+            const diff = now - startDate;
+            
+            if (diff < 0) {
+                document.getElementById('time-counter').innerText = "Ainda não começou!";
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / 1000 / 60) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            document.getElementById('time-counter').innerText = 
+                `${days} dias, ${hours.toString().padStart(2, '0')} hrs, ${minutes.toString().padStart(2, '0')} min, ${seconds.toString().padStart(2, '0')} seg`;
+        }
+        setInterval(updateCounter, 1000);
+        updateCounter();
+
+        // SECTION UNLOCKER
+        function unlockSection(num) {
+            const sec = document.getElementById(`sec-${num}`);
+            if (sec) {
+                sec.classList.remove('section-locked');
+                sec.classList.add('section-unlocked');
+                setTimeout(() => {
+                    sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+            }
+        }
+
+        // SECTION 1 LOGIC (Q1)
+        function checkQ1() {
+            const val = document.getElementById('q1-input').value.toLowerCase().trim();
+            
+            if (val.includes('casa do daniel')) {
+                showModal('Acesso Liberado!', 'Memória excelente! Dê play na música que apareceu.', 'success');
+                document.getElementById('q1-box').style.display = 'none';
+                document.getElementById('story-1-box').classList.remove('hidden');
+                document.getElementById('story-1-box').classList.add('flex');
+            } else {
+                showModal('Erro de Sistema!', 'Será que vou ter que desenhar um mapa para te lembrar? Tente de novo!', 'error');
+            }
+        }
+        document.getElementById('q1-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkQ1();
+        });
+
+        // CAROUSEL LOGIC
+        const captions = [
+            "Você é a mulher mais linda do mundo. E cada dia ao seu lado é um presente.",
+            "Nosso primeiro abraço, as nossas risadas... tudo encaixa perfeito.",
+            "Temos os mesmos sonhos e a mesma vontade de fazer dar certo.",
+            "Você me faz tão bem. Eu amo cada pedacinho de você."
+        ];
+        let currentImgIndex = 0;
+        const imgs = document.querySelectorAll('.carousel-img');
+        const textEl = document.getElementById('carousel-text');
+
+        function updateCarousel() {
+            imgs.forEach((img, i) => {
+                if(i === currentImgIndex) img.classList.add('active');
+                else img.classList.remove('active');
+            });
+            textEl.innerText = captions[currentImgIndex];
+        }
+
+        function nextImg() {
+            currentImgIndex = (currentImgIndex + 1) % imgs.length;
+            updateCarousel();
+        }
+        function prevImg() {
+            currentImgIndex = (currentImgIndex - 1 + imgs.length) % imgs.length;
+            updateCarousel();
+        }
+        updateCarousel();
+
+
+        // SECTION 2 LOGIC (Q2)
+        function wrongQ2() {
+            showModal('Incorreto!', 'Você errou lindamente. Eu te amo o infinito e muito mais do que você!', 'error');
+        }
+        function correctQ2() {
+            showModal('Exatamente!', 'Você é esperta. Eu sempre vou te amar mais. Fim de papo.', 'success');
+            document.getElementById('q2-box').style.display = 'none';
+            document.getElementById('story-2-box').classList.remove('hidden');
+            document.getElementById('story-2-box').classList.add('flex');
+        }
+
+        // SECTION 4 LOGIC (PIN & FUTURE)
+        function checkPIN() {
+            const val = document.getElementById('pin-input').value.trim();
+            
+            if (val === '0111' || val === '01/11') {
+                showModal('Código Correto!', 'Você encontrou a data mais importante.', 'success');
+                document.getElementById('pin-box').style.display = 'none';
+                document.getElementById('bonus-box').classList.remove('hidden');
+                document.getElementById('bonus-box').classList.add('flex');
+            } else {
+                showModal('Acesso Negado!', 'Código Incorreto. Pense no nosso início e tente de novo.', 'error');
+            }
+        }
+        document.getElementById('pin-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkPIN();
+        });
+
+        function showFuture() {
+            document.getElementById('bonus-box').style.display = 'none';
+            document.getElementById('final-box').classList.remove('hidden');
+            document.getElementById('final-box').classList.add('flex');
+            setTimeout(() => {
+                document.getElementById('final-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        // WHATSAPP VOUCHER LOGIC & STATE
+        const meunumero = "5511999999999"; // SUBSTITUA PELO SEU NUMERO DE WHATSAPP (Apenas numeros com DDD)
+
+        let currentVoucherId = '';
+        let currentVoucherName = '';
+
+        function checkUsedVouchers() {
+            const vouchers = ['cinema', 'natureza', 'motel', 'restaurante', 'preguica'];
+            vouchers.forEach(v => {
+                if (localStorage.getItem('vale_' + v) === 'true') {
+                    disableVoucherCard(v);
+                }
+            });
+        }
+
+        function disableVoucherCard(id) {
+            const card = document.getElementById('card-' + id);
+            if (card) {
+                card.onclick = null;
+                card.classList.add('opacity-50', 'grayscale');
+                card.classList.remove('hover:bg-red-900/20', 'hover:border-red-500/50', 'cursor-pointer');
+                
+                const badge = card.querySelector('.badge-text');
+                if (badge) {
+                    badge.innerText = "JÁ RESGATADO";
+                    badge.classList.replace('text-red-400', 'text-gray-500');
+                    badge.classList.replace('bg-red-900/30', 'bg-gray-800/80');
+                    badge.classList.replace('border-red-500/30', 'border-gray-500/30');
+                }
+            }
+        }
+
+        function openVoucherModal(name, desc, id) {
+            if (localStorage.getItem('vale_' + id) === 'true') return;
+            
+            currentVoucherId = id;
+            currentVoucherName = name;
+            
+            document.getElementById('v-title').innerText = name;
+            document.getElementById('v-desc').innerText = desc;
+            document.getElementById('v-date').value = '';
+            
+            const modal = document.getElementById('voucher-modal');
+            const mContent = document.getElementById('voucher-content');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                mContent.classList.remove('scale-95', 'opacity-0');
+                mContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeVoucherModal() {
+            const modal = document.getElementById('voucher-modal');
+            const mContent = document.getElementById('voucher-content');
+            mContent.classList.remove('scale-100', 'opacity-100');
+            mContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        function confirmVoucher() {
+            const dateVal = document.getElementById('v-date').value;
+            if (!dateVal) {
+                showModal('Atenção', 'Por favor, escolha uma data para o vale!', 'error');
+                return;
+            }
+            
+            const [y, m, d] = dateVal.split('-');
+            const formattedDate = `${d}/${m}/${y}`;
+            
+            localStorage.setItem('vale_' + currentVoucherId, 'true');
+            disableVoucherCard(currentVoucherId);
+            closeVoucherModal();
+
+            const msg = `Oie amor! Estou resgatando o meu ${currentVoucherName} para o dia ${formattedDate}! Prepara tudo! ❤️`;
+            const encoded = encodeURIComponent(msg);
+            window.open(`https://wa.me/${meunumero}?text=${encoded}`, '_blank');
+        }
+
+        // Inicializar estado dos vales ao carregar
+        checkUsedVouchers();
+
+    </script>
+</body>
+</html>
