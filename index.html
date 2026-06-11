@@ -489,12 +489,24 @@
             }, 10);
         }
 
+        let _playMusicOnClose = false;
+
         function closeModal() {
             const modal = document.getElementById('modal');
             const mContent = document.getElementById('modal-content');
 
             mContent.classList.remove('scale-100', 'opacity-100');
             mContent.classList.add('scale-95', 'opacity-0');
+
+            // Toca a música aqui — dentro de um gesto direto do usuário
+            if (_playMusicOnClose) {
+                _playMusicOnClose = false;
+                const audio = document.getElementById('bg-music');
+                if (audio) {
+                    audio.volume = 0.5;
+                    audio.play().catch(e => console.log('Audio error:', e));
+                }
+            }
 
             setTimeout(() => {
                 modal.classList.add('hidden');
@@ -540,11 +552,8 @@
             document.getElementById('story-1-box').classList.remove('hidden');
             document.getElementById('story-1-box').classList.add('flex');
 
-            const audio = document.getElementById('bg-music');
-            if (audio) {
-                audio.volume = 0.5; // Volume a 50%
-                audio.play().catch(e => console.log('Audio error:', e));
-            }
+            // Agenda a música para tocar quando o usuário fechar o modal (gesto direto)
+            _playMusicOnClose = true;
         }
 
         // CAROUSEL LOGIC
