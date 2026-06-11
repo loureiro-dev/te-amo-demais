@@ -102,15 +102,21 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.98);
-            }
+            from { opacity: 0; transform: scale(0.98); }
+            to   { opacity: 1; transform: scale(1); }
+        }
 
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        @keyframes screenShake {
+            0%,100% { transform: translateX(0) rotate(0); }
+            15%     { transform: translateX(-10px) rotate(-0.4deg); }
+            30%     { transform: translateX(10px) rotate(0.4deg); }
+            45%     { transform: translateX(-7px); }
+            60%     { transform: translateX(7px); }
+            75%     { transform: translateX(-3px); }
+            90%     { transform: translateX(3px); }
+        }
+        .screen-shake {
+            animation: screenShake 0.45s ease-in-out;
         }
     </style>
 </head>
@@ -155,14 +161,14 @@
     <div id="guto-trigger-modal"
         class="fixed inset-0 z-[105] hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4">
         <div
-            class="glass-panel p-8 rounded-3xl max-w-sm w-full text-center border border-yellow-500/50 shadow-[0_0_30px_rgba(234,179,8,0.2)]">
-            <h3 class="text-2xl serif italic mb-2 text-yellow-500">⚠️ Evento Surpresa</h3>
-            <p class="text-gray-300 text-sm mb-6 leading-relaxed">
+            class="glass-panel p-8 rounded-3xl max-w-sm w-full text-center border border-orange-500/50 shadow-[0_0_30px_rgba(249,115,22,0.2)]">
+            <h3 id="guto-trigger-title" class="text-2xl serif italic mb-2 text-orange-400">⚠️ Alerta do Sistema</h3>
+            <p id="guto-trigger-text" class="text-gray-300 text-sm mb-6 leading-relaxed">
                 Você chegou ao final do álbum e acordou o Guto! Ele está solto pelo sistema. Clique no botão abaixo e
                 seja rápida para capturá-lo nas fotos!
             </p>
             <button onclick="startGutoMinigame()"
-                class="w-full py-3 rounded-full bg-yellow-500 text-black font-bold uppercase tracking-widest text-sm hover:scale-105 transition-transform animate-pulse">
+                class="w-full py-3 rounded-full border border-orange-500 text-orange-400 font-bold uppercase tracking-widest text-sm hover:bg-orange-500/10 transition-all animate-pulse">
                 Começar Captura
             </button>
         </div>
@@ -172,16 +178,17 @@
     <div id="guto-modal"
         class="fixed inset-0 z-[110] hidden items-center justify-center bg-black/90 backdrop-blur-md px-4">
         <div
-            class="glass-panel p-6 rounded-3xl max-w-sm w-full text-center border border-yellow-500/50 shadow-[0_0_30px_rgba(234,179,8,0.2)]">
-            <h3 class="text-2xl serif italic mb-4 text-yellow-500">Guto Capturado! 🐒</h3>
+            class="glass-panel p-6 rounded-3xl max-w-sm w-full text-center border border-orange-500/50 shadow-[0_0_30px_rgba(249,115,22,0.2)]">
+            <h3 class="text-2xl serif italic mb-4 text-orange-400">Guto Capturado! 🐒</h3>
             <img src="https://i.ibb.co/3ygzHhQR/image.png"
                 class="w-full rounded-xl mb-4 border border-white/10 shadow-lg object-cover" alt="Cesta do Guto">
             <p class="text-gray-200 text-sm md:text-base mb-6 leading-relaxed italic">
                 "Sempre que sentir saudade e eu não estiver perto abrace o Guto, nós estamos conectados."
             </p>
             <button onclick="closeGutoModal()"
-                class="w-full py-4 rounded-full bg-yellow-500 text-black font-bold uppercase tracking-widest text-sm hover:scale-105 transition-transform">Retirar
-                Recompensa</button>
+                class="w-full py-4 rounded-full border border-orange-500 text-orange-400 font-bold uppercase tracking-widest text-sm hover:bg-orange-500/10 transition-all hover:scale-105">
+                Retirar Recompensa
+            </button>
         </div>
     </div>
 
@@ -449,8 +456,7 @@
                             por você</span>.<br><br>
                         A promessa de tudo que a gente ainda vai construir juntos tá guardada bem aí do seu
                         lado.<br><br>
-                        <span class="text-white font-bold text-xl block mt-4 serif">Pode abrir a caixinha agora.
-                            💍</span>
+                        <span class="text-orange-400 font-bold text-base block mt-4 uppercase tracking-widest animate-pulse">⚠️ Espera... algo está acontecendo no sistema...</span>
                     </p>
 
                     <p class="text-red-500 text-sm tracking-[0.3em] font-bold mt-4 uppercase">Feliz Dia dos Namorados
@@ -597,10 +603,16 @@
         }
         updateCarousel();
 
+        let gutoPhase = 1;
+
         function startGutoMinigame() {
             document.getElementById('guto-trigger-modal').classList.add('hidden');
             document.getElementById('guto-trigger-modal').classList.remove('flex');
-            spawnGuto();
+            if (gutoPhase === 2) {
+                spawnGuto2();
+            } else {
+                spawnGuto();
+            }
         }
 
 
@@ -649,10 +661,10 @@
             monkey.style.transition = 'all 0.4s ease-in-out';
             monkey.style.userSelect = 'none';
 
+            // PRIMEIRA TENTATIVA — FALHA
             monkey.onclick = function () {
-                document.getElementById('guto-modal').classList.remove('hidden');
-                document.getElementById('guto-modal').classList.add('flex');
                 monkey.remove();
+                showModal('Que pena! 🐒💨', 'Guto fugiu pelas páginas do sistema e você perdeu a chance de capturá-lo... Mas será que ele some assim tão fácil?', 'error');
                 document.getElementById('btn-etapa2').classList.remove('hidden');
             };
 
@@ -675,6 +687,66 @@
             setTimeout(jump, 100);
         }
 
+        // SEGUNDA TENTATIVA — SUCESSO (aparece na seção final)
+        function spawnGuto2() {
+            const monkey = document.createElement('div');
+            monkey.innerText = '🐒';
+            monkey.style.position = 'absolute';
+            monkey.style.fontSize = '4rem';
+            monkey.style.zIndex = '150';
+            monkey.style.cursor = 'pointer';
+            monkey.style.transition = 'all 0.35s ease-in-out';
+            monkey.style.userSelect = 'none';
+            monkey.title = 'Clique rápido!';
+
+            monkey.onclick = function () {
+                monkey.remove();
+                document.getElementById('guto-modal').classList.remove('hidden');
+                document.getElementById('guto-modal').classList.add('flex');
+            };
+
+            const container = document.getElementById('final-box');
+            container.style.position = 'relative';
+            container.appendChild(monkey);
+
+            function jump() {
+                if (!document.body.contains(monkey)) return;
+                const boxWidth = container.clientWidth;
+                const x = Math.random() * Math.max(boxWidth - 70, 50);
+                const y = Math.random() * 280 + 10;
+                monkey.style.left = `${x}px`;
+                monkey.style.top = `${y}px`;
+                setTimeout(jump, 650);
+            }
+
+            monkey.style.left = '40%';
+            monkey.style.top = '80px';
+            setTimeout(jump, 200);
+        }
+
+        function triggerGutoAlert() {
+            // Vibra 1
+            document.body.classList.add('screen-shake');
+            setTimeout(() => {
+                document.body.classList.remove('screen-shake');
+                // Vibra 2
+                setTimeout(() => {
+                    document.body.classList.add('screen-shake');
+                    setTimeout(() => {
+                        document.body.classList.remove('screen-shake');
+                        // Popup laranja após as vibrações
+                        setTimeout(() => {
+                            gutoPhase = 2;
+                            document.getElementById('guto-trigger-title').innerText = '⚠️ Intrusão Detectada!';
+                            document.getElementById('guto-trigger-text').innerText = 'Guto invadiu o sistema novamente e está saltando pelas fotos! Ele trouxe uma surpresa. Seja rápida desta vez!';
+                            document.getElementById('guto-trigger-modal').classList.remove('hidden');
+                            document.getElementById('guto-trigger-modal').classList.add('flex');
+                        }, 500);
+                    }, 450);
+                }, 350);
+            }, 450);
+        }
+
         function closeGutoModal() {
             document.getElementById('guto-modal').classList.add('hidden');
             document.getElementById('guto-modal').classList.remove('flex');
@@ -687,6 +759,10 @@
             setTimeout(() => {
                 document.getElementById('final-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
+            // Dá tempo de ver as fotos e ler o texto antes do Guto aparecer
+            setTimeout(() => {
+                triggerGutoAlert();
+            }, 7000);
         }
 
         // WHATSAPP VOUCHER LOGIC & STATE
